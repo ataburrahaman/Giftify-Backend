@@ -80,7 +80,7 @@ const loginUser = async (req, res) => {
     const token = generateAuthToken(user._id);
 	req.session.userId = user._id;
     res
-      .cookie("token", token, { maxAge: 1000 * 60 * 60 * 1, httpOnly: true, secure: false })
+      .cookie("token", token, { maxAge: 1000 * 60 * 60 * 60, httpOnly: true, secure: false })
       .send({ name: user.firstName });
   } catch (error) {
     return res.status(401).json({ error: error.message });

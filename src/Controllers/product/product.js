@@ -10,6 +10,7 @@ const findProductById = async (req, res, next, id) => {
         message: "product not found"
       });
     }
+    console.log("Product", product);
     req.product = product;
     next();
   });

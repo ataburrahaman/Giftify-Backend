@@ -21,7 +21,7 @@ const getWishlistById = async (req, res, next) => {
 const getWishlistItems = async (req, res) => {
 	const { wishlist } = req;
 	try {
-		await wishlist.populate('wishlistItems.product').execPopulate();
+		await wishlist.populate('wishlistItems.productDetails');
 		res.json({ response: wishlist.wishlistItems });
 	} catch (error) {
 		res.status(401).json({ response: error.message });
@@ -30,19 +30,19 @@ const getWishlistItems = async (req, res) => {
 
 const addWishlistItems = async (req, res) => {
 	const { productId } = req.params;
-	const { wishlist } = req;
+	const { wishlist, product } = req;
 	try {
-		if (!wishlist.wishlistItems.id(productId)) {
+		if (!wishlist.wishlistItems.id(product._id)) {
 			const addProductToWishlist = _.extend(wishlist, {
 				wishlistItems: _.concat(wishlist.wishlistItems, {
-					_id: productId,
-					product: productId,
+					_id: product._id,
+					productDetails: product._id,
+                    productId: productId
 				}),
 			});
 			await addProductToWishlist.save();
 			await addProductToWishlist
-				.populate('wishlistItems.product')
-				.execPopulate();
+				.populate('wishlistItems.productDetails');
 			res.json({ response: addProductToWishlist.wishlistItems });
 		} else throw Error('item already exists in wishlist');
 	} catch (error) {
@@ -51,12 +51,11 @@ const addWishlistItems = async (req, res) => {
 };
 
 const deleteWishlistItems = async (req, res) => {
-	const { productId } = req.params;
-	const { wishlist } = req;
+	const { wishlist, product } = req;
 	try {
-		await wishlist.wishlistItems.id(productId).remove();
+		await wishlist.wishlistItems.id(product._id).remove();
 		await wishlist.save();
-		await wishlist.populate('wishlistItems.product').execPopulate();
+		await wishlist.populate('wishlistItems.productDetails');
 		res.json({ response: wishlist.wishlistItems });
 	} catch (error) {
 		res.status(401).json({ response: error.message });

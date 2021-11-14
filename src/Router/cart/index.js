@@ -8,6 +8,8 @@ const {
   getCartById
 } = require("../../Controllers/cart/cart");
 
+const { findProductById } = require("../../Controllers/product/product")
+
 // const {
 // 	getCartById,
 // 	findProductById,
@@ -15,7 +17,7 @@ const {
 // } = require('../Controllers/param');
 // const router = express.Router();
 
-//router.param('productId', findProductById);
+router.param('productId', findProductById);
 
 router.get("/",getCartById, getCartItems);
 router.post("/:productId",getCartById, addCartItems);

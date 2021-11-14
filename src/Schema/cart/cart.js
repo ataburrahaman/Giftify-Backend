@@ -2,9 +2,12 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
 const childSchema = new Schema({
-  product: {
+  productDetails: {
     type: Schema.Types.ObjectId,
     ref: "Product"
+  },
+  productId:{
+    type: Number
   },
   quantity: {
     type: Number

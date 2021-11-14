@@ -7,8 +7,11 @@ const {
 	deleteWishlistItems,
     getWishlistById
 } = require('../../Controllers/wishlist/wishlist');
+const { findProductById } = require("../../Controllers/product/product")
 
 const router = express.Router();
+
+router.param('productId', findProductById);
 
 router.get('/', getWishlistById, getWishlistItems);
 router.post(

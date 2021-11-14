@@ -4,7 +4,9 @@ const bcrypt = require("bcrypt");
 const User = require("../Schema/user/user");
 
 const isAuthorized = (req, res, next) => {
-  const token = req.headers.authorization;
+  //const token = req.headers.authorization;
+  const token = req.cookies.token;
+  console.log(" Token ", req.cookies);
   try {
     const decoded = jwt.verify(token, process.env.SECRET_KEY);
     req.userId = decoded.userId;
