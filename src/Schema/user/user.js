@@ -15,10 +15,10 @@ const userSchema = new Schema(
     phoneNumber: {
         type: String,
         trim: true,
-        required: [false, "email is required"],
+        required: [true, "phone is required"],
         validate: {
             validator: function (v) {
-              return v.length > 10 && /\d+/.test(v);
+              return v.length === 10 && /\d+/.test(v);
             },
             message: (props) =>
               `phone must be 10 digit long`

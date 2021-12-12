@@ -12,24 +12,30 @@ const signupUser = async (req, res) => {
       email = "",
       password = "",
       firstName = "",
-      lastName = ""
+      lastName = "",
+	  mobile=""
     } = req.body;
-    if (!email && !email.length < 30) {
-      return res.json({ message: "Enter Valid Email" });
+
+    if (!email && !email.length > 30) {
+      return res.status(200).json({ message: "Enter Valid Email", success: false });
     }
     if (firstName.length > 30) {
-      return res.json({ message: "Enter Valid Name" });
+      return res.status(200).json({ message: "Enter Valid Name", success: false });
     }
     const user = await User.findOne({ email: req.body.email });
     if (user) {
-      return res.json({ message: "User Already exists" });
+      return res.status(200).json({ message: "User Already exists" , success: false});
     }
+	if (mobile && mobile.length === 9) {
+		return res.status(200).json({ message: "Mobile No Not Valid" , success: false});
+	  }
     //encrypt password and save new user
     const body = {
       email,
       password,
       firstName,
-      firstName
+      lastName,
+	  phoneNumber: mobile
     };
     const newUser = new User(body);
     const salt = await bcrypt.genSalt(10);
@@ -43,14 +49,14 @@ const signupUser = async (req, res) => {
 
     res
       .cookie("token", token, { maxAge: 1000 * 60 * 60 * 1, httpOnly: true, secure: false })
-      .send({ name: newUser.firstName });
+      .send({ user :{ name: newUser.firstName, uidx: newUser._id }, success: true });
     // res.json({
     // 	token,
     // 	username: newUser.firstName,
     // });
   } catch (error) {
     console.error(error);
-    res.status(401).json({ error: error.message });
+    return res.status(200).json({ message: error.message, success: false });
   }
 };
 
@@ -81,13 +87,23 @@ const loginUser = async (req, res) => {
 	req.session.userId = user._id;
     res
       .cookie("token", token, { maxAge: 1000 * 60 * 60 * 60, httpOnly: true, secure: false })
-      .send({ name: user.firstName });
+      .send({ user :{name: user.firstName, uidx: user._id}, success: true });
   } catch (error) {
-    return res.status(401).json({ error: error.message });
+    return res.status(401).json({ error: error.message, success: false });
   }
 };
 
+const getAuth=async (req, res, next)=>{
+	const userId= req.userId;
+	const user = await User.findOne({ _id: userId });
+	if(user){
+		const { email,  firstName, lastName, _id } = user;
+		res.send({ user :{name : firstName, uidx:_id }, success: true });
+	}
+}
+
 module.exports = {
   signupUser,
-  loginUser
+  loginUser,
+  getAuth
 };
